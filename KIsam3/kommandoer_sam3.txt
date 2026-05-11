@@ -1,0 +1,134 @@
+# ═══════════════════════════════════════════════════════════════
+# SAM 3 — Setup and Run Commands
+# Preprocessing: Local PC (Windows, RTX 2060 6GB)
+# Training/Testing: Thunder Compute (A100 80GB)
+# ═══════════════════════════════════════════════════════════════
+
+# ══════════════════════════════════════════════════════════════
+# PART 1 — LOCAL PC (Preprocessing only, costs nothing)
+# ══════════════════════════════════════════════════════════════
+
+# ── 1. Install Python 3.12 ──────────────────────────────────────
+# Download from: https://www.python.org/downloads/release/python-3120/
+# During install: check "Add Python 3.12 to PATH"
+
+# ── 2. Install PyTorch with CUDA ────────────────────────────────
+py -3.12 -m pip install torch==2.10.0 torchvision --index-url https://download.pytorch.org/whl/cu128
+
+# ── 3. Clone and install SAM 3 ──────────────────────────────────
+git clone https://github.com/facebookresearch/sam3.git
+cd sam3
+py -3.12 -m pip install -e ".[notebooks]"
+cd ..
+
+# ── 4. Install remaining dependencies ───────────────────────────
+py -3.12 -m pip install monai scikit-learn huggingface_hub tqdm pillow numpy einops pycocotools triton-windows
+
+# ── 5. Fix SAM 3 BPE path (run once) ────────────────────────────
+py -3.12 -c "
+path = r'"replace with own path"\KIsam3\sam3\sam3\model_builder.py'
+with open(path, encoding='utf-8') as f:
+    lines = f.readlines()
+new_lines = []
+skip = 0
+for line in lines:
+    if skip > 0:
+        skip -= 1
+        continue
+    if 'bpe_path = pkg_resources.resource_filename(' in line:
+        new_lines.append('        bpe_path = r\""replace with own path"\\KIsam3\\sam3\\sam3\\assets\\bpe_simple_vocab_16e6.txt.gz\"\n')
+        skip = 2
+    else:
+        new_lines.append(line)
+with open(path, 'w', encoding='utf-8') as f:
+    f.writelines(new_lines)
+print('Done!')
+"
+
+# ── 6. Remove inference_mode decorators (run once) ──────────────
+py -3.12 -c "
+path = r'"replace with own path"\KIsam3\sam3\sam3\model\sam3_image_processor.py'
+with open(path, encoding='utf-8') as f:
+    lines = f.readlines()
+new_lines = [l for l in lines if l.strip() not in ('@torch.inference_mode()', '@torch.no_grad()')]
+with open(path, 'w', encoding='utf-8') as f:
+    f.writelines(new_lines)
+print('Done!')
+"
+
+# ── 7. File structure ───────────────────────────────────────────
+# KIsam3/
+# ├── preprocess.py
+# ├── train.py
+# ├── test.py
+# ├── images/           ← all .jpg images flat
+# ├── masks/            ← all .png masks flat
+# ├── embeddings/       ← created by preprocess.py
+# └── checkpoints/      ← created by preprocess.py
+
+# ── 8. Run preprocessing (saves embeddings to disk) ─────────────
+cd "replace with own path"\KIsam3
+py -3.12 preprocess.py
+
+# ── 9. Upload to Thunder Compute via VS Code ────────────────────
+# Upload these folders to ~/KIsam3/ on Thunder Compute:
+#   embeddings/
+#   checkpoints/   (the .npy split files)
+#   masks/
+#   train.py
+#   test.py
+
+
+# ══════════════════════════════════════════════════════════════
+# PART 2 — THUNDER COMPUTE (Training and Testing)
+# Connect via VS Code + Thunder Compute extension
+# Select: A100 80GB instance
+# ══════════════════════════════════════════════════════════════
+
+# ── 1. Create project folder ────────────────────────────────────
+mkdir -p ~/KIsam3/embeddings
+mkdir -p ~/KIsam3/checkpoints
+mkdir -p ~/KIsam3/masks
+
+# ── 2. Install dependencies ─────────────────────────────────────
+pip install git+https://github.com/facebookresearch/sam3.git
+pip install monai scikit-learn matplotlib huggingface_hub einops pycocotools
+
+# ── 3. Fix _compute_matching (run once) ─────────────────────────
+python -c "
+path = '/home/ubuntu/.local/lib/python3.12/site-packages/sam3/model/sam3_image.py'
+with open(path) as f:
+    content = f.read()
+old = 'if self.training or self.num_interactive_steps_val > 0:\n            self._compute_matching(out, self.back_convert(find_target))'
+new = 'if False:\n            self._compute_matching(out, self.back_convert(find_target))'
+content = content.replace(old, new)
+with open(path, 'w') as f:
+    f.write(content)
+print('Done!')
+"
+
+# ── 4. Remove inference_mode decorators (run once) ──────────────
+python -c "
+path = '/home/ubuntu/.local/lib/python3.12/site-packages/sam3/model/sam3_image_processor.py'
+with open(path) as f:
+    lines = f.readlines()
+new_lines = [l for l in lines if l.strip() not in ('@torch.inference_mode()', '@torch.no_grad()')]
+with open(path, 'w') as f:
+    f.writelines(new_lines)
+print('Done!')
+"
+
+# ── 5. Run training ─────────────────────────────────────────────
+cd ~/KIsam3
+python train.py
+
+# ── 6. Run testing ──────────────────────────────────────────────
+python test.py
+
+# ── 7. Download results before stopping instance ────────────────
+# In VS Code Explorer: right click → Download
+#   checkpoints/best.pth
+#   comparison.png
+
+# ── 8. STOP YOUR INSTANCE when done to stop billing ─────────────
+# Thunder Compute dashboard → Stop instance
