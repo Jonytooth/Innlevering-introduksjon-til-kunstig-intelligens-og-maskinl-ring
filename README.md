@@ -23,6 +23,7 @@ For the scripts to function correctly, place the renamed folders as shown below,
 └── KIsam3/
     ├── images/        <-- Copy here
     └── masks/         <-- Copy here
+```
 
 ## EDA
 
