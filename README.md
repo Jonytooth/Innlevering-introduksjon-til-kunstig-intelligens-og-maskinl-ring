@@ -1,25 +1,39 @@
 # Introduction to Artificial Intelligence and Machine Learning - Final Assignment
-This repository contains the code for training and testing SAM and SAM3 for the final assignment in the AI course.
+
+This repository contains the code for training and testing **SAM** and **SAM 3** for the final assignment in the AI course.
+
+## Before You Start
+
+Due to file size limits, the dataset must be downloaded manually from Kaggle.
+1. Visit the [Military Personnel Dataset on Kaggle](https://www.kaggle.com/datasets/ivanomelchenkoim11/military-personnel-dataset-dataset).
+2. Download the `gt` and `img` folders.
+3. **Important:** Rename the folders:
+   * Rename `gt` to `masks`
+   * Rename `img` to `images`
+
+### Folder Structure
+For the scripts to function correctly, place the renamed folders as shown below, or place every file in the same folder:
+```text
+├── EDA.py
+├── images/            <-- Downloaded & renamed
+├── masks/             <-- Downloaded & renamed
+├── KIsam/
+│   ├── images/        <-- Copy here
+│   └── masks/         <-- Copy here
+└── KIsam3/
+    ├── images/        <-- Copy here
+    └── masks/         <-- Copy here
 
 ## EDA
 
-filene for eda ligger i / EDA
+To run the EDA, ensure you have Python installed and run:
 
-kjør først random images.py for å velge ut tilfeldige bilder og vise disse 
+pip install opencv-python numpy
+python EDA.py
 
-deretter kjør 
-
+This script displays the selected images and outputs the results of the analysis.
 
 ## SAM and SAM3
-
-#### Before You Start
-To train SAM and SAM3, you must download the images from Kaggle, as they exceed GitHub's file size limits. Visit this Kaggle link and download the gt and img folders. https://www.kaggle.com/datasets/ivanomelchenkoim11/military-personnel-dataset-dataset
-
-For the scripts to function correctly, these folders must be placed inside the KIsam and KIsam3 directories. You also need to rename the folders:
-
-* Rename gt to masks
-
-* Rename img to images
 
 ### Running the Code
 Both the KIsam and KIsam3 directories contain text files (kommandoer_sam.txt and kommandoer_sam3.txt) that list the necessary commands to run the Python scripts.
