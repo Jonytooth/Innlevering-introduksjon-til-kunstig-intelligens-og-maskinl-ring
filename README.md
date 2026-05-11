@@ -30,6 +30,7 @@ For the scripts to function correctly, place the renamed folders as shown below,
 To run the EDA, ensure you have Python installed and run:
 
 pip install opencv-python numpy
+
 python EDA.py
 
 This script displays the selected images and outputs the results of the analysis.
