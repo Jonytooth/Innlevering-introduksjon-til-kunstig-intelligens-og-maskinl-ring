@@ -6,7 +6,7 @@ import numpy as np
 from collections import defaultdict
 
 # ---------------------------------------------------------
-# CONFIGURATION - CHANGE THESE PATHS
+# CONFIGURATION 
 # ---------------------------------------------------------
 IMG_DIR = r"images"      # Folder containing original JPG images
 GT_DIR  = r"masks"       # Folder containing ground truth PNG masks
