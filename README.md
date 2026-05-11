@@ -46,6 +46,9 @@ Run train.py first: This handles preprocessing, training, and testing the SAM mo
 Run test.py: Use this for subsequent tests and to generate a visual representation of the results in comparison.png.
 
 ### SAM 3
+
+You should change the Hugging Face token too your own in every SAM 3 python script. This is the HF_TOKEN.
+
 Run preprocess.py: This prepares the images for the model.
 
 Run train.py: This handles both training and testing for SAM 3.
