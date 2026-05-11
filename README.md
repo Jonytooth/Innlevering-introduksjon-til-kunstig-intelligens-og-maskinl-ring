@@ -1,2 +1,2 @@
 # Innlevering-introduksjon-til-kunstig-intelligens-og-maskinl-ring
-Dette repositoriet inneholder koden for å kunne trene og teste sam og sam3
+This repository contains the code for training and testing SAM and SAM3 for the final assignment in the AI course.
