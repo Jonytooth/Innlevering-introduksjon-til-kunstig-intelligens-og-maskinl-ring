@@ -1,0 +1,46 @@
+# ═══════════════════════════════════════════════════════════════
+# SAM 1 — Setup and Run Commands (Local PC, Windows)
+# GPU: NVIDIA RTX 2060 6GB
+# ═══════════════════════════════════════════════════════════════
+
+# ── 1. Install Python 3.12 ──────────────────────────────────────
+# Download from: https://www.python.org/downloads/release/python-3120/
+# During install: check "Add Python 3.12 to PATH"
+
+# ── 2. Install PyTorch with CUDA ────────────────────────────────
+py -3.12 -m pip install torch==2.10.0 torchvision --index-url https://download.pytorch.org/whl/cu128
+
+# ── 3. Install SAM 1 ────────────────────────────────────────────
+py -3.12 -m pip install git+https://github.com/facebookresearch/segment-anything.git
+
+# ── 4. Install remaining dependencies ───────────────────────────
+py -3.12 -m pip install monai scikit-learn matplotlib tqdm pillow numpy
+
+# ── 5. Download SAM 1 checkpoint (~2.4 GB) ──────────────────────
+# Download manually from:
+# https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth
+# Place in: "replace with own path"\KIsam\
+
+# ── 6. File structure ───────────────────────────────────────────
+# KIsam/
+# ├── train.py
+# ├── test.py
+# ├── sam_vit_h_4b8939.pth
+# ├── images/        ← all .jpg images flat
+# └── masks/         ← all .png masks flat
+
+# ── 7. Run training (50 images) ─────────────────────────────────
+cd "replace with own path"\KIsam
+py -3.12 train.py
+
+# ── 8. Run training (1000 images) ───────────────────────────────
+# Change N_IMAGES = 1000 in train.py config, then:
+py -3.12 train.py
+
+# ── 9. Run testing ──────────────────────────────────────────────
+py -3.12 test.py
+
+# ── Output files ────────────────────────────────────────────────
+# checkpoints/best.pth     ← best trained model
+# checkpoints/last.pth     ← last epoch model
+# comparison.png           ← visual comparison image
