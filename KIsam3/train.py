@@ -24,7 +24,7 @@ from sam3.model.sam3_image_processor import Sam3Processor
 EMBED_DIR    = "embeddings"
 MASK_DIR     = "masks"
 CKPT_DIR     = "checkpoints"
-HF_TOKEN     = "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"
+HF_TOKEN     = "--change--"
 TEXT_PROMPT  = "camouflaged person"
 DEVICE       = "cuda" if torch.cuda.is_available() else "cpu"
 NUM_EPOCHS   = 10
